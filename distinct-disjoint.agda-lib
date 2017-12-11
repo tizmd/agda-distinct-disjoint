@@ -1,0 +1,4 @@
+name: distinct-disjoint
+depend: standard-library, vector-any
+include: src
+
