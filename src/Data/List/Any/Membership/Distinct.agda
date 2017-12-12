@@ -36,6 +36,9 @@ module _ {a p} {S : Setoid a p} where
   head∉tail : ∀ {x}{xs : List A} → Distinct (x ∷ xs) → x ∉ xs
   head∉tail (_ distinct-∷ _ by x∉xs) = x∉xs
 
+  distinct-[_] : ∀ x → Distinct (List.[ x ])
+  distinct-[ x ] = x distinct-∷ distinct-[] by (λ ())
+  
   ⋈-++ : ∀ (xs ys : List A) →
     Distinct (xs ++ ys) ⇔ (Distinct xs × Distinct ys × xs ⋈ ys)
   ⋈-++ xs ys = equivalence to from
