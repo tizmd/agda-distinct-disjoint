@@ -7,7 +7,7 @@ open import Data.Vec.Any hiding (map; index; tail)
 open import Data.List as List using (List)
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_; _≗_ )
 open import Relation.Binary.HeterogeneousEquality as H using (_≅_; _≇_)
-import Data.List.Distinct as ListDistinct
+import Data.List.Any.Membership.Propositional.Distinct as ListDistinct
 open import Data.Product as Prod hiding (map)
 open import Data.Sum     hiding (map)
 open import Data.Empty   using (⊥-elim)
@@ -21,6 +21,7 @@ open import Function.Equality as F using (_⟨$⟩_)
 open import Function.Injection using (_↣_; Injection)
 
 infix 4 _∉_
+
 _∉_ : ∀ {a}{A : Set a} {n} → A → Vec A n → Set a
 x ∉ xs = ¬ (x ∈ xs)
 
@@ -121,7 +122,6 @@ tabulate {n = suc n} f = (Injection.to f ⟨$⟩ zero) distinct-∷ tabulate (f 
     tabulate-∈′ f (there p) with tabulate-∈′ (f ∘ suc) p
     ... | i , eq = suc i , eq
 
-
     lemma : (Injection.to f ⟨$⟩ zero) ∉ Vec.tabulate ((Injection.to f ⟨$⟩_) ∘ Fin.suc)
     lemma p with tabulate-∈′ _ (∈→∈′ p)
     lemma p | i , fi≡f0 with Injection.injective f fi≡f0
@@ -157,7 +157,7 @@ zipʳ [] distinct-[] = distinct-[]
 zipʳ (x ∷ xs) (y distinct-∷ dys by y∉ys) = (x , y) distinct-∷ zipʳ xs dys
   by λ p → y∉ys (∈-zipʳ p)
 
-toList : ∀ {a n}{A : Set a}{xs : Vec A n} → Distinct xs → ListDistinct.Distinct {S = P.setoid A} (Vec.toList xs)
+toList : ∀ {a n}{A : Set a}{xs : Vec A n} → Distinct xs → ListDistinct.Distinct (Vec.toList xs)
 toList distinct-[] = ListDistinct.distinct-[]
 toList (x distinct-∷ dxs by x∉xs) = x ListDistinct.distinct-∷ toList dxs
   by λ x∈xs → x∉xs (lemma x∈xs) 
@@ -169,7 +169,7 @@ toList (x distinct-∷ dxs by x∉xs) = x ListDistinct.distinct-∷ toList dxs
     lemma {xs = x ∷ xs} (ListAny.here P.refl) = _∈_.here
     lemma {xs = x ∷ xs} (ListAny.there p) = _∈_.there (lemma p)
 
-fromList : ∀ {a}{A : Set a}{xs : List A} → ListDistinct.Distinct {S = P.setoid A} xs → Distinct (Vec.fromList xs)
+fromList : ∀ {a}{A : Set a}{xs : List A} → ListDistinct.Distinct xs → Distinct (Vec.fromList xs)
 fromList ListDistinct.distinct-[] = distinct-[]
 fromList (x ListDistinct.distinct-∷ dxs by x∉xs) =
   x distinct-∷ fromList dxs by λ x∈xs → x∉xs (lemma x∈xs)
