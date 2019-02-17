@@ -1,7 +1,7 @@
 open import Relation.Binary
-module Data.List.Any.Membership.Trans {a p} (S : Setoid a p) where
+module Data.List.Membership.Setoid.Trans {a p} (S : Setoid a p) where
 open Setoid S
-open import Data.List.Any.Membership (S)
+open import Data.List.Membership.Setoid (S)
 open import Data.List.Any
 
 ≈-trans-∈ : ∀ {x y xs} → x ≈ y → y ∈ xs → x ∈ xs

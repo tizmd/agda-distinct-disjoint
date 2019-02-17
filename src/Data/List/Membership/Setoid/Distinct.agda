@@ -1,9 +1,9 @@
 open import Relation.Binary
 
-module Data.List.Any.Membership.Distinct  where
+module Data.List.Membership.Setoid.Distinct  where
 
 open import Data.List as List using (List; [];  _∷_; _++_)
-open import Data.List.Any as Any hiding (map; tail)
+open import Data.List.Any as Any hiding (map; head; tail)
 open import Data.List.Any.Properties
 
 open import Relation.Binary.PropositionalEquality as P using (_≡_)
@@ -20,9 +20,9 @@ open import Data.Nat as ℕ
 
 module _ {a p} {S : Setoid a p} where
   open Setoid S renaming (Carrier to A)
-  open import Data.List.Any.Membership (S)
-  open import Data.List.Any.Membership.Disjoint (S) renaming (Disjoint to _⋈_)  
-  open import Data.List.Any.Membership.Trans (S)
+  open import Data.List.Membership.Setoid (S)
+  open import Data.List.Membership.Setoid.Disjoint (S) renaming (Disjoint to _⋈_)  
+  open import Data.List.Membership.Setoid.Trans (S)
   open import Data.Empty
   data Distinct : List A → Set (a L.⊔ p) where
     distinct-[] : Distinct []
@@ -76,9 +76,9 @@ module _ {a p} {S : Setoid a p} where
 module _ {a₁ a₂ p₁ p₂}{S₁ : Setoid a₁ p₁} {S₂ : Setoid a₂ p₂} where
   open Setoid S₁ renaming (Carrier to A) using ()
   open Setoid S₂ renaming (Carrier to B) using ()
-  open import Data.List.Any.Membership (S₂) renaming (_∉_ to _∉₂_) using ()
-  open import Data.List.Any.Membership.Properties
-  open import Data.List.Any.Membership.Trans (S₁)  
+  open import Data.List.Membership.Setoid (S₂) renaming (_∉_ to _∉₂_) using ()
+  open import Data.List.Membership.Setoid.Properties
+  open import Data.List.Membership.Setoid.Trans (S₁)  
   map : (f : Injection S₁ S₂) → ∀ {xs : List A} → Distinct {S = S₁} xs → Distinct {S = S₂} (List.map (Injection.to f ⟨$⟩_) xs)          
   map f {[]} distinct-[] = distinct-[]
   map f {.x ∷ xs} (x distinct-∷ dis by x∉xs) = fx distinct-∷ map f dis by lemma

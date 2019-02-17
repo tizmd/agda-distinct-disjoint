@@ -1,12 +1,10 @@
 open import Relation.Binary
 
-module Data.List.Any.Membership.Disjoint {a p} (S : Setoid a p) where
+module Data.List.Membership.Setoid.Disjoint {a p} (S : Setoid a p) where
 open Setoid S renaming (Carrier to A)
 open import Data.List using (List ; [])
-open import Data.List.Any using (here; there)
-open import Data.List.Any.Membership (S)
-open import Data.List.Any.Membership.Properties
-open import Data.List.Any.Membership.Trans (S)
+open import Data.List.Membership.Setoid (S)
+open import Data.List.Membership.Setoid.Trans (S)
 open import Data.Empty
 import Relation.Binary.PropositionalEquality as P
 
