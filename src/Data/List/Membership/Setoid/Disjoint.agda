@@ -6,7 +6,6 @@ open import Data.List using (List ; [])
 open import Data.List.Membership.Setoid (S)
 open import Data.List.Membership.Setoid.Trans (S)
 open import Data.Empty
-import Relation.Binary.PropositionalEquality as P
 
 open import Function
 

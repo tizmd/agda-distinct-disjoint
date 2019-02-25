@@ -1,10 +1,12 @@
-module Data.Vec.Distinct.Properties where
+module Data.Vec.Membership.Propositional.Distinct.Properties where
 open import Data.Fin as Fin
 open import Relation.Binary.PropositionalEquality as P
-open import Data.Vec as Vec using (Vec; [] ; _∷_ ; _∈_ ; _++_)
-open import Data.Vec.Distinct
-open import Data.Vec.Properties renaming (∈-++ₗ to ∈-++-left)
-open import Data.Vec.Disjoint renaming (Disjoint to _⋈_)
+open import Data.Vec as Vec using (Vec; [] ; _∷_ ; _++_)
+open import Data.Vec.Any
+open import Data.Vec.Membership.Propositional.Distinct
+open import Data.Vec.Membership.Propositional.Disjoint renaming (Disjoint to _⋈_)
+open import Data.Vec.Membership.Propositional.Properties
+open import Data.Vec.Membership.Propositional
 open import Data.Product
 open import Data.Empty using (⊥-elim)
 open import Function using (_∘_)
@@ -12,27 +14,27 @@ open import Function.Equivalence using (_⇔_; equivalence)
 
 distinct-++ˡ : ∀ {a}{A : Set a}{m n} (xs : Vec A m){ys : Vec A n} → Distinct (xs ++ ys) → Distinct xs
 distinct-++ˡ [] dis = distinct-[]
-distinct-++ˡ (x ∷ xs) (.x distinct-∷ dis by x∉xsys) = x distinct-∷ distinct-++ˡ xs dis by λ x∈xs → x∉xsys (∈-++-left x∈xs)
+distinct-++ˡ (x ∷ xs) (.x distinct-∷ dis by x∉xsys) = x distinct-∷ distinct-++ˡ xs dis by λ x∈xs → x∉xsys (∈-++⁺ˡ x∈xs)
 
 distinct-++ʳ : ∀ {a}{A : Set a}{m n} (xs : Vec A m) {ys : Vec A n} → Distinct (xs ++ ys) → Distinct ys
 distinct-++ʳ [] dys = dys
 distinct-++ʳ (x ∷ xs) (.x distinct-∷ dxsys by _) = distinct-++ʳ xs dxsys
 
 distinct-++→disjoint : ∀ {a}{A : Set a}{m n} (xs : Vec A m) {ys : Vec A n} → Distinct (xs ++ ys) → xs ⋈ ys
-distinct-++→disjoint [] dxsys {z} () z∈ys
-distinct-++→disjoint (x ∷ xs) (.x distinct-∷ dxsys by x∉xsys) {.x} _∈_.here x∈ys = x∉xsys (∈-++ᵣ xs x∈ys)
-distinct-++→disjoint (x ∷ xs) (.x distinct-∷ dxsys by x∉xsys) {z} (_∈_.there z∈xs) z∈ys = distinct-++→disjoint xs dxsys z∈xs z∈ys
+distinct-++→disjoint [] dxsys {z} () z∈ys 
+distinct-++→disjoint (x ∷ xs) (.x distinct-∷ dxsys by x∉xsys) {.x} (here refl) x∈ys = x∉xsys (∈-++⁺ʳ xs x∈ys)
+distinct-++→disjoint (x ∷ xs) (.x distinct-∷ dxsys by x₁) {z} (there z∈xs) z∈ys = distinct-++→disjoint xs dxsys z∈xs z∈ys
 
 ⋈→distinct-++ : ∀ {a}{A : Set a}{m n}{xs : Vec A m}{ys : Vec A n} → Distinct xs → Distinct ys → xs ⋈ ys → Distinct (xs ++ ys)
 ⋈→distinct-++ {xs = []}  _ dys _ = dys
-⋈→distinct-++ {xs = x ∷ xs} (.x distinct-∷ dxs by x∉xs) dys xxs⋈ys = x distinct-∷ ⋈→distinct-++ dxs dys (xxs⋈ys ∘ _∈_.there)
-  by λ x∈xs++ys → xxs⋈ys _∈_.here (x∈xs++ys→x∉xs→x∈ys xs x∈xs++ys x∉xs) 
+⋈→distinct-++ {xs = x ∷ xs} (.x distinct-∷ dxs by x∉xs) dys xxs⋈ys = x distinct-∷ ⋈→distinct-++ dxs dys (xxs⋈ys ∘ there)
+  by λ x∈xs++ys → xxs⋈ys (here P.refl) (x∈xs++ys→x∉xs→x∈ys xs x∈xs++ys x∉xs) 
   where
     x∈xs++ys→x∉xs→x∈ys : ∀ {a} {A : Set a} {m n} (xs : Vec A m){ys : Vec A n} → 
                        ∀ {x} → x ∈ xs ++ ys → x ∉ xs → x ∈ ys
     x∈xs++ys→x∉xs→x∈ys [] x∈ys _ = x∈ys
-    x∈xs++ys→x∉xs→x∈ys (x ∷ xs) _∈_.here x∉xs = ⊥-elim (x∉xs _∈_.here)
-    x∈xs++ys→x∉xs→x∈ys (x ∷ xs) (_∈_.there x∈xsys) x∉xs = x∈xs++ys→x∉xs→x∈ys xs x∈xsys (x∉xs ∘ _∈_.there)
+    x∈xs++ys→x∉xs→x∈ys (x ∷ xs) (here refl) x∉xs = ⊥-elim (x∉xs (here refl))
+    x∈xs++ys→x∉xs→x∈ys (x ∷ xs) (there x∈xsys) x∉xs = x∈xs++ys→x∉xs→x∈ys xs x∈xsys (x∉xs ∘ there)
 
 distinct-++⇔⋈ : ∀ {a}{A : Set a}{m n} {xs : Vec A m}{ys : Vec A n} →
   Distinct (xs ++ ys) ⇔ (Distinct xs × Distinct ys × xs ⋈ ys)
@@ -51,8 +53,8 @@ distinct-++⇔⋈ = equivalence to from
 private
   lookup-∈ : ∀ {a n}{A : Set a} i (xs : Vec A n) → Vec.lookup i xs ∈ xs
   lookup-∈ () []
-  lookup-∈ zero (x ∷ xs) = _∈_.here
-  lookup-∈ (suc i) (x ∷ xs) = _∈_.there (lookup-∈ i xs)
+  lookup-∈ zero (x ∷ xs) = here P.refl
+  lookup-∈ (suc i) (x ∷ xs) = there (lookup-∈ i xs)
   
 lookup-injective : ∀ {a n}{A : Set a} {xs : Vec A n}{i j} →
   Distinct xs → Vec.lookup i xs ≡ Vec.lookup j xs → i ≡ j

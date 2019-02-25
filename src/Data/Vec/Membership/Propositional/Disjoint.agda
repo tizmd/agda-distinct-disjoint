@@ -1,6 +1,6 @@
-module Data.Vec.Disjoint where
-
+module Data.Vec.Membership.Propositional.Disjoint where
 open import Data.Vec
+open import Data.Vec.Membership.Propositional
 open import Relation.Binary.PropositionalEquality as P using (_≡_; _≢_)
 open import Data.Empty using (⊥; ⊥-elim)
 open import Function using (flip)
