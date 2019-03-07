@@ -1,3 +1,4 @@
+{-# OPTIONS --safe --without-K #-}
 module Data.List.Membership.Propositional.Distinct where
 
 open import Data.List using (List)

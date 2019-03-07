@@ -1,3 +1,4 @@
+{-# OPTIONS --safe --without-K #-}
 open import Relation.Binary
 
 module Data.List.Membership.Setoid.Disjoint {a p} (S : Setoid a p) where

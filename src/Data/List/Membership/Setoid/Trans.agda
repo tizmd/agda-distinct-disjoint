@@ -1,3 +1,4 @@
+{-# OPTIONS --safe --without-K #-}
 open import Relation.Binary
 module Data.List.Membership.Setoid.Trans {a p} (S : Setoid a p) where
 open Setoid S

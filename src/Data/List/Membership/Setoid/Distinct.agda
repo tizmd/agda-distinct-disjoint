@@ -1,3 +1,4 @@
+{-# OPTIONS --safe --without-K #-}
 open import Relation.Binary
 
 module Data.List.Membership.Setoid.Distinct  where
@@ -21,6 +22,7 @@ open import Data.Nat as ℕ
 module _ {a p} {S : Setoid a p} where
   open Setoid S renaming (Carrier to A)
   open import Data.List.Membership.Setoid (S)
+  open import Data.List.Membership.Setoid.Properties
   open import Data.List.Membership.Setoid.Disjoint (S) renaming (Disjoint to _⋈_)  
   open import Data.List.Membership.Setoid.Trans (S)
   open import Data.Empty
@@ -56,22 +58,13 @@ module _ {a p} {S : Setoid a p} where
       from {xs = .x ∷ xs} ((x distinct-∷ dxs by x∉xs) , dys , xxs⋈ys) with from (dxs , dys , xxs⋈ys ∘ there)
       ... | dxsys = x distinct-∷ dxsys by λ x∈xsys → case ++⁻ xs x∈xsys of λ { (inj₁ x∈xs) → x∉xs x∈xs
                                                                                ; (inj₂ x∈ys) → xxs⋈ys (here refl) x∈ys}
-  lookup : (xs : List A) → Fin (List.length xs) → A
-  lookup [] ()
-  lookup (x ∷ xs) Fin.zero = x
-  lookup (_ ∷ xs) (Fin.suc i) = lookup xs i
 
-  lookup-∈ : (xs : List A)(i : Fin (List.length xs)) → lookup xs i ∈ xs
-  lookup-∈ [] ()
-  lookup-∈ (x ∷ xs) Fin.zero = here refl
-  lookup-∈ (x ∷ xs) (Fin.suc i) = there (lookup-∈ xs i) 
-  
-  lookup-injective : {xs : List A}(dxs : Distinct xs) → ∀ {i j} → lookup xs i ≡ lookup xs j → i ≡ j
+  lookup-injective : {xs : List A}(dxs : Distinct xs) → ∀ {i j} → List.lookup xs i ≡ List.lookup xs j → i ≡ j
   lookup-injective distinct-[] {()} {()} _
-  lookup-injective (x distinct-∷ dxs by x∉xs) {Fin.zero} {Fin.zero} P.refl = P.refl
+  lookup-injective (x distinct-∷ dxs by x∉xs) {Fin.zero} {Fin.zero} _ = P.refl
   lookup-injective (x distinct-∷ dxs by x∉xs) {Fin.suc i} {Fin.suc j} eq = P.cong Fin.suc (lookup-injective dxs eq)
-  lookup-injective {xs} (x distinct-∷ dxs by x∉xs) {Fin.zero} {Fin.suc j} eq rewrite eq = ⊥-elim (x∉xs (lookup-∈ _ j))
-  lookup-injective (x distinct-∷ dxs by x∉xs) {Fin.suc i} {Fin.zero} eq rewrite P.sym eq = ⊥-elim (x∉xs (lookup-∈ _ i))
+  lookup-injective {xs} (x distinct-∷ dxs by x∉xs) {Fin.zero} {Fin.suc j} eq rewrite eq = ⊥-elim (x∉xs (∈-lookup S _ j))
+  lookup-injective (x distinct-∷ dxs by x∉xs) {Fin.suc i} {Fin.zero} eq rewrite P.sym eq = ⊥-elim (x∉xs (∈-lookup S _ i))
   
 module _ {a₁ a₂ p₁ p₂}{S₁ : Setoid a₁ p₁} {S₂ : Setoid a₂ p₂} where
   open Setoid S₁ renaming (Carrier to A) using ()
